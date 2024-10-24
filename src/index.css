@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.active{
+    background: #021431;
+    padding: 8px 12px;
+    color: azure;
+    border-radius: 8px;
+}
+
+body{
+    background: #e0dfea;
+    
+}
