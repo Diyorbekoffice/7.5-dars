@@ -8,7 +8,7 @@ import { CartContext } from '../App';
 function MainLayout({ children }) { 
   const { cart } = useContext(CartContext);
   const [count, setCount]  = useState(0);
-  const [username, setUsername] = useState(null); // Username ni saqlash uchun state
+  const [username, setUsername] = useState(null); 
   const navigate = useNavigate();
   const location = useLocation();
   const [token, setToken] = useState(localStorage.getItem('token'))
@@ -24,10 +24,10 @@ function MainLayout({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      setUsername(localStorage.getItem('user.username')); // Username ni localStorage'dan olish
+      setUsername(localStorage.getItem('user.username')); 
     } else {
       if (location.pathname === '/orders') {
-        navigate('/login'); // Agar login qilinmagan bo'lsa, login sahifasiga o'tish
+        navigate('/login');
       }
     }
   }, [navigate, location.pathname]);

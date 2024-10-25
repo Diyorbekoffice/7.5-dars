@@ -11,7 +11,7 @@ function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await http.get('products?featured=true'); // `featured` parametri
+        const response = await http.get('products?featured=true');
         if (response.status === 200) {
           setProducts(response.data.data);
         }

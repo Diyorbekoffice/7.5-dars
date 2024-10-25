@@ -8,28 +8,40 @@ function Details() {
   const { id } = useParams();
   const [color, setColor] = useState();
   const [count, setCount] = useState(1);
-  const { cart, setCart, sum, setSum } = useContext(CartContext);
+  const { cart, setCart } = useContext(CartContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Yangi state: xabarnoma
   const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
-    http.get(`products/${id}`)
-      .then(response => {
-        if (response.status == 200) {
-          setProduct(response.data.data);
-          setColor(response.data.data.attributes.colors[0]);
-        }
-      })
-      .catch(err => {
-        setError('Error fetching product details.');
-        console.error(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const savedProduct = localStorage.getItem(`product-${id}`);
+    if (savedProduct) {
+      // localStorage'dan ma'lumotni olish
+      const productData = JSON.parse(savedProduct);
+      setProduct(productData);
+      setColor(productData.attributes.colors[0]);
+      setLoading(false);
+    } else {
+      // API'dan ma'lumotni olish
+      http.get(`products/${id}`)
+        .then(response => {
+          if (response.status === 200) {
+            const productData = response.data.data;
+            setProduct(productData);
+            setColor(productData.attributes.colors[0]);
+            localStorage.setItem(`product-${id}`, JSON.stringify(productData)); // `product`ni localStorage'ga saqlash
+          }
+        })
+        .catch(err => {
+          setError('Error fetching product details.');
+          console.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }, [id]);
 
   function handleSetCart(e) {
@@ -41,24 +53,28 @@ function Details() {
       data: product 
     };
     
-    let copied = [...cart];
-    let isExist = copied.find(c => {
-      return c.id == data.id && color == c.color;
-    });
+    // localStorage'dan cart'ni olish yoki bo'sh massiv yaratish
+    let savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    let isExist = savedCart.find(c => c.id === data.id && color === c.color);
 
     if (!isExist) {
-      setCart([...cart, data]);
+      savedCart.push(data);
     } else {
-      copied = copied.map(value => {
-        if (value.id == data.id && value.color == color) {
+      savedCart = savedCart.map(value => {
+        if (value.id === data.id && value.color === color) {
           value.count += Number(data.count);
         }
         return value;
       });
-      setCart(copied);
-      localStorage.setItem('cart', JSON.stringify(copied));
     }
+
+    // Yangilangan cart'ni localStorage'ga saqlash
+    localStorage.setItem('cart', JSON.stringify(savedCart));
     
+    // Context cart'ni yangilash
+    setCart(savedCart);
+
     // Xabarnomani ko'rsatish
     setShowNotification(true);
     setTimeout(() => {
@@ -98,7 +114,7 @@ function Details() {
           <img className="w-96 h-96 object-cover rounded-lg lg:w-full" src={image} alt={title} />
           <div className='text-left'>
             <h3 className='capitalize text-3xl font-bold text-indigo-950'>{title}</h3>
-            <p className="text-xl  font-bold mt-2 text-gray-400">{company}</p>
+            <p className="text-xl font-bold mt-2 text-gray-400">{company}</p>
             <p className='mt-3 text-xl'>${price}</p>
             <p className='mt-6 leading-8'>{description}</p>
             <p className="text-md font-medium tracking-wider capitalize mt-6">Colors</p>

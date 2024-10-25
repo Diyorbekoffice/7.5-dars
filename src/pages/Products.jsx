@@ -55,7 +55,6 @@ function Products() {
   return (
     <div className='container mx-auto p-8 flax'>
       <div className="mb-8 flex items-center justify-between bg-blue-100 p-4 rounded-lg">
-        {/* Qidiruv va filtrlar */}
         <input
           type="text"
           placeholder="Search..."
@@ -112,7 +111,6 @@ function Products() {
         )}
       </div>
 
-      {/* Paginatsiya */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6">
           {Array.from({ length: totalPages }, (_, index) => (

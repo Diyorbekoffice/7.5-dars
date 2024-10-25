@@ -53,13 +53,13 @@ const Register = () => {
           "password": passwordRef.current.value,
         };
 
-        http.post('/auth/local/register', user) // To'liq API yo'li kiriting
+        http.post('/auth/local/register', user) 
             .then((response) => {
                 const data = response.data;
                 if (data.user) {
                     navigate('/login');
                 }
-                FormRef.current.reset(); // Forma reset qiling
+                FormRef.current.reset(); 
             })
             .catch((error) => {
                 console.log(error);
